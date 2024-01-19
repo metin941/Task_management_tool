@@ -174,5 +174,6 @@ def filter_tasks(query, filter_date, filter_owner):
 
     return query
 
+
 if __name__ == '__main__':
     app.run(debug=True)
