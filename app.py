@@ -2,11 +2,18 @@ from flask import Flask, abort, render_template, request, url_for, redirect, sen
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 from werkzeug.utils import secure_filename
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_bcrypt import Bcrypt
 import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}  # New database for users
+app.config['SECRET_KEY'] = '252525'  # Change this to a secret key of your choice
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 # Add a configuration for file uploads
 UPLOAD_FOLDER = 'Attachments'
@@ -41,7 +48,83 @@ class Todo(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
-@app.route('/', methods=['POST','GET'])
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+class UserLogin(UserMixin, db.Model):
+    __bind_key__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+@app.route('/')
+def redirect_to_index():
+    return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        existing_user = UserLogin.query.filter_by(username=username).first()
+        if existing_user:
+            return render_template('register.html', error='Username already exists. Choose a different one.')
+
+        new_user = UserLogin(username=username)
+        new_user.set_password(password)
+
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            return redirect(url_for('login'))
+        except:
+            db.session.rollback()
+            return 'Error registering user. Please try again.'
+
+    return render_template('register.html', error=None)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return UserLogin.query.get(int(user_id))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = UserLogin.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('index'))  # Redirect to the 'index' route upon successful login
+        else:
+            return render_template('login.html', error='Invalid username or password')
+
+    return render_template('login.html', error=None)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/index', methods=['POST','GET'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
@@ -52,7 +135,7 @@ def index():
             try:
                 db.session.add(new_task)
                 db.session.commit()
-                return redirect('/')
+                return redirect(url_for('index'))
             except:
                 return 'Tehere is a issue adding your task, please contact IT department'
         else:
@@ -68,7 +151,7 @@ def delete(id):
         try:
             db.session.delete(task_to_delete)
             db.session.commit()
-            return redirect('/')
+            return redirect('/index')
         except:
             return 'There was a problem deleting that task'
 
@@ -90,7 +173,7 @@ def update_task(task_id):
             task.finished = datetime.utcnow()
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect('/index')
         except Exception as e:
             db.session.rollback()  # Rollback changes if an exception occurs
             return f'There was an issue updating the task status:    {str(e)}'
@@ -110,7 +193,7 @@ def update_owner(task_id):
 
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect('/index')
         except Exception as e:
             db.session.rollback()  # Rollback changes if an exception occurs
             return f'There was an issue updating the task status:    {str(e)}'

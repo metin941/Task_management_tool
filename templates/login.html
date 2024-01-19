@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <!-- Add any additional head content here -->
+    <title>Login</title>
+{% endblock %}
+
+{% block body %}
+    <div class="login-container">
+        <h2>Login</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post" action="{{ url_for('login') }}">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Add a link to the registration page -->
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+    </div>
+{% endblock %}
