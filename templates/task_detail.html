@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="task-detail">
+    <h1>Task Detail</h1>
+    <p>{{ task.content }}</p>
+
+    <div class="existing-comments">
+        <h2>Comments ({{ task.comment_count }})</h2>
+        {% for comment in task.comments %}
+            <div class="comment">
+                <p class="comment-author">
+                    {% if comment.author is not none and '@' in comment.author and '.' in comment.author %}
+                        <i class="fa fa-user-circle" style="color: rgb(77, 77, 216);"></i><a href="mailto:{{ comment.author }}">{{ comment.author }}</a>
+                    {% else %}
+                        <i class="fa fa-user-circle" style="color: gray;"></i> {{ comment.author }}
+                    {% endif %}
+                </p>
+                <p class="comment-content">{{ comment.content }}</p>
+                {% if comment.attachment_path %}
+                <p class="comment-attachment">
+                    Attachment: <a href="{{ url_for('download_attachment', filename=comment.attachment_path) }}" target="_blank">{{ comment.attachment_path.replace('Attachments\\', '') }}</a>
+                </p>
+                {% endif %}
+                <p class="comment-date">{{ comment.date_created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form action="{{ url_for('add_task_comment', task_id=task.id) }}" method="POST" enctype="multipart/form-data" class="upload-form">
+        <div>
+            <label for="comment_content">Add a Comment:</label>
+        </div>
+        <input type="text" name="comment-author" id="comment-author" placeholder="Author" class="comment-author">
+        <textarea name="comment_content" id="comment_content" class="task_comment_write" placeholder="Write your comment here"></textarea>
+        <input type="file" name="attachment" id="attachment" class="custom-file-input">
+        <input type="submit" value="Submit Comment">
+    </form>
+</div>
+
+{% endblock %}

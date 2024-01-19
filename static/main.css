@@ -1,0 +1,203 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+table {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 5px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid #ddd; /* Adding a border to cells as well */
+}
+th:first-child, td:first-child {
+    width: 2%; /* Adjust the width for ID */
+}
+th:nth-child(2), td:nth-child(2) {
+    width: 20%; /* Adjust the width for Task */
+}
+th:nth-child(3), td:nth-child(3) {
+    width: 7%; /* Adjust the width for Created date */
+}
+th:nth-child(4), td:nth-child(4) {
+    width: 25%; /* Adjust the width for Owner */
+}
+th:nth-child(5), td:nth-child(5) {
+    width: 14%; /* Adjust the width for Author */
+}
+th:nth-child(6), td:nth-child(6) {
+    width: 6%; /* Adjust the width for Status */
+}
+th:nth-child(7), td:nth-child(7) {
+    width: 7%; /* Adjust the width for Finished date */
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+form {
+    margin-top: 5px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    margin-right: 10px;
+}
+
+input[type="text"].small {
+    width: 20%; /* Adjust the width as needed */
+}
+
+textarea.large {
+    width: 90%;
+    height: 150px; /* Adjust the height as needed */
+    padding: 10px;
+    margin-top: 10px;
+}
+
+input[type="submit"] {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+/* Style for action links container */
+.actions {
+    display: flex;
+    gap: 5px; /* Adjust the gap between links as needed */
+}
+
+/* Style for action links */
+.actions a {
+    padding: 5px 10px;
+    font-size: 13px; /* Adjust the font size as needed */
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    text-align: center; /* Center the text */
+    display: inline-block; /* Ensure the text-align property works */
+}
+
+.actions a:hover {
+    background-color: #0056b3;
+}
+
+.task-detail {
+    max-width: 1800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+p {
+    color: #555;
+    line-height: 1.5;
+}
+.update-button {
+    background-color: #0056b3; /* Green background */
+    color: white; /* White text */
+    padding: 5px 8px; /* Padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+.delete-button {
+    background-color: #b34200; /* Red background */
+    color: white; /* White text */
+    padding: 5px 8px; /* Padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+.owner_input {
+    height: 1px;
+}
+.task_comment_write{
+    height: 100px;
+    width: 100%;
+}
+
+
+.existing-comments {
+    margin-top: 20px;
+}
+
+.comment {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.comment-content {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.comment-date {
+    color: #888;
+    font-size: 12px;
+}
+.comment-author {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.upload-form .custom-file-input {
+    position: relative;
+    height: 4%;
+    width: 13%;
+    cursor: pointer;
+    border: 1px solid #000000;  /* Border color */
+    border-radius: 4px;
+    padding: 8px;  /* Adjust padding as needed */
+    box-sizing: border-box;
+}
