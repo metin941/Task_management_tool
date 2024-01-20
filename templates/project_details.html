@@ -5,8 +5,11 @@
 {% endblock %}
 
 {% block body %}
-<div class="content">   
-    <h1><i class="fa fa-lock" aria-hidden="true"></i> Admin page</h1>
+<div class="project-detail">
+    <h1>Project Detail</h1>
+    <p>{{ project.content }}</p>
+
+
     <table>
         <tr>
             <th>ID</th>
@@ -64,7 +67,7 @@
                         </select>
                         <button type="submit" class="update-button">Update status</button>
                     </form>
-                    <form action="/delete/{{task.id}}" method="POST">
+                    <form action="/delete_task/{{task.id}}" method="POST">
                         <button type="submit" class="delete-button">Delete</button>
                     </form>
                 </td>
@@ -72,11 +75,53 @@
         {% endfor %}
     </table>
 
-    <form action="index" method="POST">
+    <form action="{{ url_for('add_project_task', project_id=project.id) }}" method="POST">
+        <div>
+            <label for="task_content">Add a Task:</label>
+        </div>
         <input type="text" name="owner" id="owner" placeholder="Owner" class="small">
         <input type="text" name="author" id="author" placeholder="Author" class="small">
+        <textarea name="content" id="content" class="large" placeholder="Task content"></textarea>
         <input type="submit" value="Add Task">
-        <textarea type="text" name="content" id="content" placeholder="Task content" class="large"></textarea>
+    </form>
+
+    <div class="existing-comments">
+        <h2>Comments ({{ project.comment_count }})</h2>
+        {% for comment in project.comments %}
+            <div class="comment">
+                <p class="comment-author">
+                    {% if comment.author is not none and '@' in comment.author and '.' in comment.author %}
+                        <i class="fa fa-user-circle" style="color: rgb(77, 77, 216);"></i><a href="mailto:{{ comment.author }}">{{ comment.author }}</a>
+                    {% else %}
+                        <i class="fa fa-user-circle" style="color: gray;"></i> {{ comment.author }}
+                    {% endif %}
+                </p>
+                <p class="comment-content">{{ comment.content }}</p>
+                {% if comment.attachment_path %}
+                    <p class="comment-attachment">
+                        Attachment: <a href="{{ url_for('download_attachment', filename=comment.attachment_path) }}" target="_blank">{{ comment.attachment_path.replace('Attachments\\', '') }}</a>
+                    </p>
+                {% endif %}
+                <p class="comment-date">{{ comment.date_created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form action="{{ url_for('add_project_comment', project_id=project.id) }}" method="POST" enctype="multipart/form-data" class="upload-form">
+        <div>
+            <label for="comment-author">Author:</label>
+            <input type="text" name="comment-author" id="comment-author" class="comment-author">
+        </div>
+        <div>
+            <label for="comment_content">Add a Comment:</label>
+            <textarea name="comment_content" id="comment_content" class="task_comment_write" placeholder="Write your comment here"></textarea>
+        </div>
+        <div>
+            <label for="attachment">Attachment:</label>
+            <input type="file" name="attachment" id="attachment" class="custom-file-input">
+        </div>
+        <input type="submit" value="Submit Comment">
     </form>
 </div>
+
 {% endblock %}
