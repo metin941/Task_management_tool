@@ -5,7 +5,15 @@ body {
     padding: 0;
 }
 
-.content {
+.content_project {
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.project_details {
     max-width: 95%;
     margin: 20px auto;
     padding: 20px;
@@ -200,4 +208,169 @@ p {
     border-radius: 4px;
     padding: 8px;  /* Adjust padding as needed */
     box-sizing: border-box;
+}
+.login-container {
+    max-width: 300px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login_h {
+    color: #333;
+}
+
+.login-form {
+    margin-top: 20px;
+}
+
+.login_label_username,
+.login_label_password {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.login_input_username,
+.login_input_password {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.login_submit {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login_submit:hover {
+    background-color: #0056b3;
+}
+
+.login_error {
+    color: #b34200;
+    margin-top: 10px;
+}
+
+.register-container {
+    max-width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.register_h {
+    color: #333;
+}
+
+.register-form {
+    margin-top: 10px;
+}
+
+.register_label_username,
+.register_label_password {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.register_input_username,
+.register_input_password {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.register_submit {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.register_submit:hover {
+    background-color: #0056b3;
+}
+
+.register_error {
+    color: #b34200;
+    margin-top: 10px;
+}
+
+/* Additional styles for the password reminder */
+.register-container p {
+    color: #555;
+    margin-top: 10px;
+}
+.eye-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.text-editor {
+    font-family: 'Arial', sans-serif; /* Use a common font */
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    resize: vertical; /* Allow vertical resizing */
+    height: 300px; /* Set an initial height */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Add transitions for smoother effects */
+}
+
+.text-editor:focus {
+    border-color: #007bff; /* Highlight border color when focused */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box shadow */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Optionally, you can style the placeholder text */
+.text-editor::placeholder {
+    color: #888;
+}
+
+.input {
+    font-family: 'Arial', sans-serif; /* Use a common font */
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    resize: vertical; /* Allow vertical resizing */
+    height: 15px; /* Set an initial height */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Add transitions for smoother effects */
+}
+
+.input:focus {
+    border-color: #007bff; /* Highlight border color when focused */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box shadow */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Optionally, you can style the placeholder text */
+.input::placeholder {
+    color: #888;
 }

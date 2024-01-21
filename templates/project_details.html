@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block body %}
-<div class="project-detail">
-    <h1>Project Detail</h1>
+<div class="project_details">
+    <h1><i class="fa fa-lock" aria-hidden="true"></i> Project details</h1>
     <p>{{ project.content }}</p>
 
 
@@ -15,8 +15,8 @@
             <th>ID</th>
             <th>Task</th>
             <th><label>Added</label></th>
-            <th><label>Owner</label></th>
-            <th><label>Author</label></th>
+            <th><label>Task owner</label></th>
+            <th><label>Task author</label></th>
             <th><label>Status</label></th>
             <th><label>Finished</label></th>
             <th><label>Actions</label></th>
@@ -76,13 +76,10 @@
     </table>
 
     <form action="{{ url_for('add_project_task', project_id=project.id) }}" method="POST">
-        <div>
-            <label for="task_content">Add a Task:</label>
-        </div>
-        <input type="text" name="owner" id="owner" placeholder="Owner" class="small">
-        <input type="text" name="author" id="author" placeholder="Author" class="small">
-        <textarea name="content" id="content" class="large" placeholder="Task content"></textarea>
+        <input type="text" name="owner" id="owner" placeholder="Owner" class="small input">
+        <input type="text" name="author" id="author" placeholder="Author" class="small input">
         <input type="submit" value="Add Task">
+        <textarea name="content" id="content" class="large text-editor" placeholder="Task content"></textarea>
     </form>
 
     <div class="existing-comments">
@@ -107,21 +104,15 @@
         {% endfor %}
     </div>
 
-    <form action="{{ url_for('add_project_comment', project_id=project.id) }}" method="POST" enctype="multipart/form-data" class="upload-form">
-        <div>
-            <label for="comment-author">Author:</label>
-            <input type="text" name="comment-author" id="comment-author" class="comment-author">
-        </div>
-        <div>
-            <label for="comment_content">Add a Comment:</label>
-            <textarea name="comment_content" id="comment_content" class="task_comment_write" placeholder="Write your comment here"></textarea>
-        </div>
-        <div>
-            <label for="attachment">Attachment:</label>
-            <input type="file" name="attachment" id="attachment" class="custom-file-input">
-        </div>
-        <input type="submit" value="Submit Comment">
-    </form>
+<form action="{{ url_for('add_project_comment', project_id=project.id) }}" method="POST" enctype="multipart/form-data" class="upload-form">
+    <div>
+        <label for="comment_content">Add a Comment:</label>
+    </div>
+    <input type="text" name="comment-author" id="comment-author" placeholder="Author" class="small input">
+    <textarea name="comment_content" id="comment_content" class="large text-editor" placeholder="Write your comment here"></textarea>
+    <input type="file" name="attachment" id="attachment" class="custom-file-input">
+    <input type="submit" value="Submit Comment">
+</form>
 </div>
 
 {% endblock %}

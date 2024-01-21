@@ -5,16 +5,16 @@
 {% endblock %}
 
 {% block body %}
-<div class="content">   
-    <h1><i class="fa fa-lock" aria-hidden="true"></i> Admin project page</h1>
+<div class="content_project">   
+    <h1><i class="fa fa-lock" aria-hidden="true"></i> Project page</h1>
     <table>
         <!-- Table header row -->
         <tr>
             <th>ID</th>
             <th>Project</th>
             <th><label>Added</label></th>
-            <th><label>Owner</label></th>
-            <th><label>Author</label></th>
+            <th><label>Project owner</label></th>
+            <th><label>Project author</label></th>
             <th><label>Status</label></th>
             <th><label>Finished</label></th>
             <th><label>Actions</label></th>
@@ -78,10 +78,10 @@
 
     <!-- Form to add a new project -->
     <form action="{{ url_for('admin_project') }}" method="POST">
-        <input type="text" name="owner" id="owner" placeholder="Owner" class="small">
-        <input type="text" name="author" id="author" placeholder="Author" class="small">
+        <input type="text" name="owner" id="owner" placeholder="Owner" class="small input">
+        <input type="text" name="author" id="author" placeholder="Author" class="small input">
         <input type="submit" value="Add Project">
-        <textarea type="text" name="content" id="content" placeholder="Project content" class="large"></textarea>
+        <textarea type="text" name="content" id="content" placeholder="Project content" class="large text-editor"></textarea>
     </form>
 </div>
 {% endblock %}

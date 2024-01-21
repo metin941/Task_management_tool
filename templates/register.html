@@ -1,21 +1,43 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <title>Register</title>
+
 {% endblock %}
 
 {% block body %}
-    <h2>Register</h2>
+<div class="register-container">
+    <h2 class="register_h">Register</h2>
     {% if error %}
-        <p class="error">{{ error }}</p>
+        <p class="register_error">{{ error }}</p>
     {% endif %}
-    <form method="post" action="{{ url_for('register') }}">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <form method="post" action="{{ url_for('register') }}" class="register-form">
+        <label for="username" class="register_label_username">Username:</label>
+        <input type="text" id="username" name="username" required class="register_input_username">
         
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <label for="password" class="register_label_password">Password:</label>
+        <input type="password" id="password" name="password" required class="register_input_password">
         
-        <button type="submit">Register</button>
+        <!-- Show Password Option -->
+        <button type="submit" class="register_submit">Register</button>
+        <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+        <label for="showPassword">Show Password</label>
     </form>
+    
+    <!-- Password Guidelines -->
+    <p>Please enter a secure password:</p>
+    <ul>
+        <li>Use a mix of uppercase and lowercase letters</li>
+        <li>Include numbers and special characters</li>
+        <li>Make it at least 8 characters long</li>
+        <li>Avoid using easily guessable information, like your name or birthdate</li>
+    </ul>
+
+    <!-- JavaScript to Toggle Password Visibility -->
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById('password');
+            passwordInput.type = (passwordInput.type === 'password') ? 'text' : 'password';
+        }
+    </script>
+</div>
 {% endblock %}

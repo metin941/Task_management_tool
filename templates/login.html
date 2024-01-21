@@ -1,27 +1,38 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <!-- Add any additional head content here -->
-    <title>Login</title>
+
 {% endblock %}
 
 {% block body %}
     <div class="login-container">
-        <h2>Login</h2>
+        <h2 class="login_h">Login</h2>
         {% if error %}
-            <p class="error">{{ error }}</p>
+            <p class="login_error">{{ error }}</p>
         {% endif %}
-        <form method="post" action="{{ url_for('login') }}">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+        <form method="post" action="{{ url_for('login') }}" class="login-form">
+            <label for="username" class="login_label_username">Username:</label>
+            <input type="text" id="username" name="username" required class="login_input_username">
             
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit">Login</button>
+            <label for="password" class="login_label_password">Password:</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required class="login_input_password">
+            </div>
+    
+            <!-- Show Password Option -->
+            <button type="submit" class="login_submit">Login</button>
+            <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility('password')">
+            <label for="showPassword">Show Password</label>
         </form>
+    
+        <!-- JavaScript to Toggle Password Visibility -->
+        <script>
+            function togglePasswordVisibility(passwordId) {
+                var passwordInput = document.getElementById(passwordId);
+                passwordInput.type = (passwordInput.type === 'password') ? 'text' : 'password';
+            }
+        </script>
 
-        <!-- Add a link to the registration page -->
         <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
     </div>
 {% endblock %}
