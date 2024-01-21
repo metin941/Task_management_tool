@@ -17,7 +17,7 @@ login_manager.login_view = 'login'
 
 #Configuration for file uploads
 UPLOAD_FOLDER = 'Attachments'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'cmd', 'bat','rar','zip'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #This part redirects directly to login page 
@@ -445,4 +445,4 @@ def download_attachment(filename):
         abort(404)
 #====================================================================================================================================
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=6050)
