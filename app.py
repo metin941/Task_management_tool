@@ -279,6 +279,7 @@ def add_project_comment(project_id):
         try:
             db.session.add(project_comment)
             db.session.commit()
+            return redirect(url_for('project_details', project_id=project_id))
         except Exception as e:
             db.session.rollback()
             return f'There was an issue adding the comment: {str(e)}'
@@ -286,7 +287,7 @@ def add_project_comment(project_id):
     # Fetch the project along with its comments
     project_with_comments = Projects.query.options(db.joinedload(Projects.comments)).get_or_404(project_id)
 
-    return render_template('project_details.html', project=project_with_comments)
+    return render_template('project_details', project=project_with_comments)
 
 @app.route('/project_details/<int:project_id>')
 def project_details(project_id):
@@ -419,7 +420,7 @@ def add_task_comment(task_id):
                 # Save the filename to the database or use it as needed
                 attachment_path = os.path.join('Attachments', filename)
 
-        task_comment = Comment(content=new_task_comment, author=author, task=task, attachment_path=attachment_path)
+        task_comment = Comment_task(content=new_task_comment, author=author, task=task, attachment_path=attachment_path)
         task.comment_count += 1
 
         try:
