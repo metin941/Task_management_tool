@@ -150,11 +150,28 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('admin_project'))  # Redirect to the 'index' route upon successful login
+            return redirect(url_for('user'))  # Redirect to the 'index' route upon successful login
         else:
             return render_template('login.html', error='Invalid username or password')
 
     return render_template('login.html', error=None)
+
+#Login admin , it reads from users.db the user and then checks the password with if statement
+@app.route('/login_admin', methods=['GET', 'POST'])
+def login_admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = UserLogin.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('admin_project'))  # Redirect to the 'index' route upon successful login
+        else:
+            return render_template('login_admin.html', error='Invalid username or password')
+
+    return render_template('login_admin.html', error=None)
 
 #Logout from the Admin page
 @app.route('/logout')
