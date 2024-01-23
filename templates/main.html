@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content_project">   
+    <h1>Main page</h1>
+    <table>
+        <!-- Table header row -->
+        <tr>
+            <th>ID</th>
+            <th>Project</th>
+            <th><label>Added</label></th>
+            <th><label>Project owner</label></th>
+            <th><label>Project author</label></th>
+            <th><label>Status</label></th>
+            <th><label>Finished</label></th>
+            <th><label>Actions</label></th>
+        </tr>
+
+        <!-- Iterate over projects and display information -->
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.id }}</td>
+                <td> <i class="fa fa-tasks" style="color: gray;"></i> <a href="{{ url_for('main_project_details', project_id=project.id) }}" target="_blank">{{ project.content }}</a></td>
+                <td><i class="fa fa-calendar" style="color: gray;"></i> {{ project.date_created.date() }}</td>
+                <td>
+                        {% if project.owner is not none and '@' in project.owner and '.' in project.owner %}
+                            <i class="fa fa-user-circle" style="color: rgb(77, 77, 216);"></i> <a href="mailto:{{ project.owner }}">{{ project.owner }}</a>
+                        {% else %}
+                            <i class="fa fa-user-circle" style="color: gray;"></i> {{ project.owner }}
+                        {% endif %}
+                    </form>
+                </td>
+                <td>
+                    {% if project.author is not none and '@' in project.author and '.' in project.author %}
+                        <i class="fa fa-user-circle" style="color: rgb(77, 77, 216);"></i><a href="mailto:{{ project.owner }}">{{ project.author }}</a>
+                    {% else %}
+                        <i class="fa fa-user-circle" style="color: gray;"></i> {{ project.author }}
+                    {% endif %}
+                </td>
+                <td>{{ project.status }}
+                    {% if project.status == 'Completed' %}
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                    {% elif project.status == 'In Progress' %}
+                        <i class="fa fa-spinner" style="color: orange;"></i>
+                    {% elif project.status == 'New' %}
+                        <i class="fa fa-plus" style="color: blue;"></i>
+                    {% endif %}
+                </td>
+                <td>{% if project.finished is not none %}
+                        <i class="fa fa-calendar" style="color: gray;"></i> {{ project.finished.strftime('%Y-%m-%d') }}
+                    {% else %}
+                        Not finished yet
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <form action="{{ url_for('main', project_id=project.id) }}" method="POST">
+                        <select name="status">
+                            <option value="New" {% if project.status == 'New' %} selected {% endif %}>New</option>
+                            <option value="In Progress" {% if project.status == 'In Progress' %} selected {% endif %}>In Progress</option>
+                            <option value="Completed" {% if project.status == 'Completed' %} selected {% endif %}>Completed</option>
+                        </select>
+                        <button type="submit" class="update-button">Update status</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

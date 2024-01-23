@@ -8,7 +8,10 @@ import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
-app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}  # New database for users
+app.config['SQLALCHEMY_BINDS'] = {
+    'users': 'sqlite:///users.db',
+    'admins': 'sqlite:///admins.db'
+}  # New databases for users and admins
 app.config['SECRET_KEY'] = 'admin'  # Change this to a secret key of your choice
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -107,7 +110,55 @@ class UserLogin(UserMixin, db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+#Admin User class adds new user to users.db file from /register tab
+class AdminUser(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+#UserLogin class reads from admins.db file 
+class AdminLogin(UserMixin, db.Model):
+    __bind_key__ = 'admins'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
 #============================================Registe and Login =============================================================
+
+@app.route('/admin_register', methods=['GET', 'POST'])
+def admin_register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        existing_admin_user = AdminLogin.query.filter_by(username=username).first()
+        if existing_admin_user:
+            return render_template('admin_register.html', error='Admin username already exists. Choose a different one.')
+
+        new_admin_user = AdminLogin(username=username)
+        new_admin_user.set_password(password)
+
+        try:
+            db.session.add(new_admin_user)
+            db.session.commit()
+            login_user(new_admin_user)
+            return redirect(url_for('login_admin'))
+        except Exception as e:
+            db.session.rollback()
+            return 'Error registering admin user. Please try again.'
+
+    return render_template('admin_register.html', error=None)
 
 #Register page 
 @app.route('/register', methods=['GET', 'POST'])
@@ -137,7 +188,17 @@ def register():
 #Load user uses query.get and reads by ID
 @login_manager.user_loader
 def load_user(user_id):
-    return UserLogin.query.get(int(user_id))
+    # Check if the user_id is associated with a regular user
+    user = UserLogin.query.get(int(user_id))
+    if user:
+        return user
+    
+    # If not, check if it corresponds to an admin user
+    admin_user = AdminLogin.query.get(int(user_id))
+    if admin_user:
+        return admin_user
+    
+    return None  # Return None if the user_id is not found
 
 #Login user , it reads from users.db the user and then checks the password with if statement
 @app.route('/login', methods=['GET', 'POST'])
@@ -150,7 +211,7 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('user'))  # Redirect to the 'index' route upon successful login
+            return redirect(url_for('main'))  # Redirect to the 'main' route upon successful login
         else:
             return render_template('login.html', error='Invalid username or password')
 
@@ -163,13 +224,13 @@ def login_admin():
         username = request.form['username']
         password = request.form['password']
 
-        user = UserLogin.query.filter_by(username=username).first()
+        admin_user = AdminLogin.query.filter_by(username=username).first()
 
-        if user and user.check_password(password):
-            login_user(user)
-            return redirect(url_for('admin_project'))  # Redirect to the 'index' route upon successful login
+        if admin_user and admin_user.check_password(password):
+            login_user(admin_user)
+            return redirect(url_for('admin_project'))  # Redirect to the 'admin_project' route upon successful login
         else:
-            return render_template('login_admin.html', error='Invalid username or password')
+            return render_template('login_admin.html', error='Invalid admin username or password')
 
     return render_template('login_admin.html', error=None)
 
@@ -179,6 +240,104 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 #==============================================================================================================================
+
+@app.route('/main/<int:project_id>', methods=['POST', 'GET'])
+@app.route('/main', methods=['POST', 'GET'])
+def main(project_id=None):
+    if project_id:
+        project = Projects.query.get_or_404(project_id)
+    else:
+        project = None
+
+    if request.method == 'POST':
+        if project:
+            new_status = request.form.get('status')
+            project.status = new_status
+
+            if new_status == 'Completed' and project.finished is None:
+                project.finished = datetime.utcnow()
+
+            try:
+                db.session.commit()
+                return redirect(url_for('main'))
+            except Exception as e:
+                db.session.rollback()
+                return f'There was an issue updating the project status: {str(e)}'
+
+    projects = Projects.query.order_by(Projects.date_created).all()
+    return render_template('main.html', projects=projects, selected_project=project)
+
+@app.route('/main_project_details/<int:project_id>')
+def main_project_details(project_id):
+    # Retrieve the project based on project_id
+    project = Projects.query.get_or_404(project_id)
+    # Retrieve associated tasks for the project
+    tasks = Tasks.query.filter_by(project_id=project_id).all()
+    # Add any additional logic you need for displaying project details
+    return render_template('main_project_details.html', project=project, tasks=tasks)
+
+@app.route('/main_view_task/<int:task_id>')
+def main_view_task(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    return render_template('task_detail.html', task=task)
+
+@app.route('/main_update_task/<int:task_id>', methods=['POST'])
+def main_update_task(task_id):
+    task = Tasks.query.get_or_404(task_id)
+
+    if request.method == 'POST':
+        new_status = request.form['status']
+        task.status = new_status
+
+        if new_status == 'Completed' and task.finished is None:
+            # Set finished date if status is set to Completed and finished date is not already set
+            task.finished = datetime.utcnow()
+
+        try:
+            db.session.commit()
+            flash('Task updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'There was an issue updating the task status: {str(e)}', 'danger')
+
+    return redirect(url_for('main_project_details', project_id=task.project_id))
+
+@app.route('/main_add_project_comment/<int:project_id>', methods=['POST'])
+def main_add_project_comment(project_id):
+    project = Projects.query.get_or_404(project_id)
+
+    if request.method == 'POST':
+        new_project_comment = request.form.get('comment_content')
+        author = request.form.get('comment-author')  # Use the correct name here
+
+        # Initialize attachment_path to None
+        attachment_path = None
+
+        # Check if the post request has the file part
+        if 'attachment' in request.files:
+            file = request.files['attachment']
+            # If the user selects a file and it's allowed, save it
+            if file.filename and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                # Save the filename to the database or use it as needed
+                attachment_path = os.path.join('Attachments', filename)
+
+        project_comment = Comment_project(content=new_project_comment, author=author, project=project, attachment_path=attachment_path)
+        project.comment_count += 1
+
+        try:
+            db.session.add(project_comment)
+            db.session.commit()
+            return redirect(url_for('main_project_details', project_id=project_id))
+        except Exception as e:
+            db.session.rollback()
+            return f'There was an issue adding the comment: {str(e)}'
+
+    # Fetch the project along with its comments
+    project_with_comments = Projects.query.options(db.joinedload(Projects.comments)).get_or_404(project_id)
+
+    return render_template('main_project_details', project=project_with_comments)
 
 #=============================================Project==========================================================================
 #Admin projects page 
